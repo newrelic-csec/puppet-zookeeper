@@ -3,6 +3,7 @@
 class zookeeper::defaults {
     $hosts            = { "${::fqdn}" => 1 }
 
+    $conf_dir         = '/etc/zookeeper/conf'
     $data_dir         = '/var/lib/zookeeper'
     $data_log_dir     = undef
     $jmx_port         = 9998

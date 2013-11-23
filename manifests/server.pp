@@ -22,19 +22,19 @@ class zookeeper::server(
     # need zookeeper common package and config.
     Class['zookeeper'] -> Class['zookeeper::server']
 
-    # Install zookeeper server package
-    package { 'zookeeperd':
-        ensure    => $::zookeeper::version,
-    }
+    # # Install zookeeper server package
+    # package { 'zookeeperd':
+    #     ensure    => $::zookeeper::version,
+    # }
 
     file { '/etc/default/zookeeper':
         content => template($default_template),
-        require => Package['zookeeperd'],
+        require => Package['zookeeper'],
     }
 
-    file { '/etc/zookeeper/conf/log4j.properties':
+    file { "${::zookeeper::conf_dir}/log4j.properties":
         content => template($log4j_template),
-        require => Package['zookeeperd'],
+        require => Package['zookeeper'],
     }
 
     file { $::zookeeper::data_dir:
@@ -46,28 +46,27 @@ class zookeeper::server(
 
     # Get this host's $myid from the $fqdn in the $zookeeper_hosts hash.
     $myid = $::zookeeper::hosts[$::fqdn]
-    file { '/etc/zookeeper/conf/myid':
+    file { "${::zookeeper::conf_dir}/myid":
         content => $myid,
     }
     file { "${::zookeeper::data_dir}/myid":
         ensure  => 'link',
-        target  => '/etc/zookeeper/conf/myid',
+        target  => "${::zookeeper::conf_dir}/myid",
     }
 
     service { 'zookeeper':
         ensure     => running,
         require    => [
-            Package['zookeeperd'],
+            Package['zookeeper'],
             File[ $::zookeeper::data_dir],
             File["${::zookeeper::data_dir}/myid"],
         ],
         hasrestart => true,
         hasstatus  => true,
         subscribe  => [
-            File['/etc/default/zookeeper'],
-            File['/etc/zookeeper/conf/zoo.cfg'],
-            File['/etc/zookeeper/conf/myid'],
-            File['/etc/zookeeper/conf/log4j.properties'],
+            File["${::zookeeper::conf_dir}/zoo.cfg"],
+            File["${::zookeeper::conf_dir}/myid"],
+            File["${::zookeeper::conf_dir}/log4j.properties"],
         ],
     }
 

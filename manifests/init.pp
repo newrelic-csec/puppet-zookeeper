@@ -50,6 +50,7 @@ class zookeeper(
     $tick_time     = $::zookeeper::defaults::tick_time,
     $init_limit    = $::zookeeper::defaults::init_limit,
     $sync_limit    = $::zookeeper::defaults::sync_limit,
+    $conf_dir      = $::zookeeper::defaults::conf_dir,
     $conf_template = $::zookeeper::defaults::conf_template,
     $version       = $::zookeeper::defaults::version
 ) inherits zookeeper::defaults
@@ -58,7 +59,7 @@ class zookeeper(
         ensure => $version,
     }
 
-    file { '/etc/zookeeper/conf/zoo.cfg':
+    file { "${conf_dir}/zoo.cfg":
         content => template($conf_template),
         require => Package['zookeeper'],
     }
