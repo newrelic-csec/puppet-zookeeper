@@ -48,6 +48,8 @@ class zookeeper::server(
     $myid = $::zookeeper::hosts[$::fqdn]
     file { "${::zookeeper::conf_dir}/myid":
         content => $myid,
+        owner  => 'zookeeper',
+        group  => 'zookeeper',
     }
     file { "${::zookeeper::data_dir}/myid":
         ensure  => 'link',
